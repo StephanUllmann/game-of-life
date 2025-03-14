@@ -13,6 +13,7 @@ export class Game {
   private bgColor;
   private startingCellNum;
   private intervalId: ReturnType<typeof setInterval> | null = null;
+  private largePaint = true;
 
   constructor(canvas: HTMLCanvasElement, color: string, bgColor: string, cellSize: number, startingCellNum = 42) {
     this.canvas = canvas;
@@ -36,7 +37,7 @@ export class Game {
     this.nextTick = this.nextTick.bind(this);
     this.setEventListeners();
     this.pickRandomCells(this.startingCellNum);
-    this.cells.forEach((c) => this.checkNeighbours(c));
+    // this.cells.forEach((c) => this.checkNeighbours(c));
   }
 
   createGrid() {
@@ -109,10 +110,11 @@ export class Game {
   handleClick() {
     if (this.currHoveredCell) this.currHoveredCell.active = !this.currHoveredCell.active;
     // if (this.currHoveredCell) this.checkNeighbours(this.currHoveredCell);
-    this.currHoveredCell?.neighbours.forEach((n) => {
-      const c = n ? this.cells.get(n) : null;
-      if (c) c.active = !c.active;
-    });
+    if (this.largePaint)
+      this.currHoveredCell?.neighbours.forEach((n) => {
+        const c = n ? this.cells.get(n) : null;
+        if (c) c.active = !c.active;
+      });
   }
 
   drawGrid() {
@@ -143,13 +145,15 @@ export class Game {
       if (this.cells.get(key)?.active) livingNeighbours++;
     }
 
-    if (livingNeighbours < 2 || livingNeighbours > 3) cell.liveOnNextTick = false;
-    else cell.liveOnNextTick = true;
+    if (livingNeighbours < 2) cell.liveOnNextTick = false;
+    else if (cell.active && (livingNeighbours === 2 || livingNeighbours === 3)) cell.liveOnNextTick = true;
+    else if (cell.active && livingNeighbours > 3) cell.liveOnNextTick = false;
+    else if (!cell.active && livingNeighbours === 3) cell.liveOnNextTick = true;
   }
 
   nextTick() {
-    this.cells.forEach((c) => c.evalNextTick());
     this.cells.forEach((c) => this.checkNeighbours(c));
+    this.cells.forEach((c) => c.evalNextTick());
   }
 
   run(interval = 2000) {
@@ -159,6 +163,18 @@ export class Game {
   stop() {
     if (this.intervalId) clearInterval(this.intervalId);
     this.intervalId = null;
+  }
+
+  clear() {
+    this.stop();
+    this.cells.forEach((c) => {
+      c.active = false;
+      c.liveOnNextTick = false;
+    });
+  }
+
+  toggleLargePaint() {
+    this.largePaint = !this.largePaint;
   }
 }
 

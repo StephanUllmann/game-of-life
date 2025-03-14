@@ -28,6 +28,9 @@ export class GameOfLife extends LitElement {
   @state()
   running = false;
 
+  @state()
+  largePaint = true;
+
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this.game = new Game(this.canvas, this.color, this.bgColor, this.cellSize, this.startingCellNum);
   }
@@ -68,6 +71,24 @@ export class GameOfLife extends LitElement {
       <h1>Conway's Game of Life</h1>
       <canvas style="background-color: ${this.bgColor}"></canvas>
       <div class="controls">
+        <button
+          @click=${() => {
+            if (this.game) {
+              this.game.toggleLargePaint();
+              this.largePaint = !this.largePaint;
+            }
+          }}
+        >
+          Paint Toggle: ${this.largePaint ? 9 : 1}
+        </button>
+        <button
+          @click=${() => {
+            if (this.game) this.game.clear();
+            this.running = false;
+          }}
+        >
+          Clear
+        </button>
         ${this.running
           ? html`<button
               @click=${() => {
