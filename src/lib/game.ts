@@ -36,6 +36,7 @@ export class Game {
     this.nextTick = this.nextTick.bind(this);
     this.setEventListeners();
     this.pickRandomCells(this.startingCellNum);
+    this.cells.forEach((c) => this.checkNeighbours(c));
   }
 
   createGrid() {
@@ -147,8 +148,8 @@ export class Game {
   }
 
   nextTick() {
-    this.cells.forEach((c) => this.checkNeighbours(c));
     this.cells.forEach((c) => c.evalNextTick());
+    this.cells.forEach((c) => this.checkNeighbours(c));
   }
 
   run(interval = 2000) {
