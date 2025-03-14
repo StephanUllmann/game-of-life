@@ -1,3 +1,7 @@
+import { gosperGliderGun, longGun } from './patterns';
+
+export type seed = 'random' | 'long gun' | 'gospher glider gun';
+
 export class Game {
   private canvas;
   private ctx;
@@ -15,7 +19,14 @@ export class Game {
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private largePaint = true;
 
-  constructor(canvas: HTMLCanvasElement, color: string, bgColor: string, cellSize: number, startingCellNum = 42) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    color: string,
+    bgColor: string,
+    cellSize: number,
+    startingCellNum = 42,
+    seed: seed
+  ) {
     this.canvas = canvas;
     const rect = this.canvas.getBoundingClientRect();
     this.canvas.width = rect.width;
@@ -36,7 +47,7 @@ export class Game {
     // this.run = this.run.bind(this);
     this.nextTick = this.nextTick.bind(this);
     this.setEventListeners();
-    this.pickRandomCells(this.startingCellNum);
+    this.seed(seed);
     // this.cells.forEach((c) => this.checkNeighbours(c));
   }
 
@@ -78,23 +89,28 @@ export class Game {
     this.drawGrid();
   }
 
-  setEventListeners() {
+  private setEventListeners() {
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
     this.canvas.addEventListener('mouseleave', this.handleMouseLeave);
     this.canvas.addEventListener('click', this.handleClick);
   }
 
-  removeEventListeners() {
+  disconnect() {
+    this.removeEventListeners();
+  }
+
+  private removeEventListeners() {
     this.canvas.removeEventListener('mousemove', this.handleMouseMove);
     this.canvas.removeEventListener('mouseleave', this.handleMouseLeave);
     this.canvas.removeEventListener('click', this.handleClick);
     if (this.intervalId) clearInterval(this.intervalId);
   }
-  handleMouseLeave() {
+
+  private handleMouseLeave() {
     this.currHoveredCell = null;
   }
 
-  handleMouseMove(e: MouseEvent) {
+  private handleMouseMove(e: MouseEvent) {
     const x = e.offsetX - (e.offsetX % this.cellSize);
     const y = e.offsetY - (e.offsetY % this.cellSize);
     if (this.currMousePos[0] === x && this.currMousePos[1] === y) return;
@@ -107,7 +123,7 @@ export class Game {
     // if (this.currHoveredCell) this.currHoveredCell!.active = true;
   }
 
-  handleClick() {
+  private handleClick() {
     if (this.currHoveredCell) this.currHoveredCell.active = !this.currHoveredCell.active;
     // if (this.currHoveredCell) this.checkNeighbours(this.currHoveredCell);
     if (this.largePaint)
@@ -117,7 +133,7 @@ export class Game {
       });
   }
 
-  drawGrid() {
+  private drawGrid() {
     if (!this.ctx || !this.gridPath) return;
 
     this.ctx.strokeStyle = this.white;
@@ -125,19 +141,7 @@ export class Game {
     this.ctx.stroke(this.gridPath);
   }
 
-  pickRandomCells(num: number) {
-    for (let i = 0; i < num; i++) {
-      const randomX = Math.floor(Math.random() * this.canvas.width);
-      const x = randomX - (randomX % this.cellSize);
-      const randomY = Math.floor(Math.random() * this.canvas.height);
-      const y = randomY - (randomY % this.cellSize);
-
-      const cell = this.cells.get(x + ',' + y);
-      if (cell) cell.active = true;
-    }
-  }
-
-  checkNeighbours(cell: Cell) {
+  private checkNeighbours(cell: Cell) {
     let livingNeighbours = 0;
 
     for (let key of cell.neighbours) {
@@ -175,6 +179,62 @@ export class Game {
 
   toggleLargePaint() {
     this.largePaint = !this.largePaint;
+  }
+
+  reset(mode: seed) {
+    this.clear();
+    this.seed(mode);
+  }
+
+  private seed(mode: seed) {
+    switch (mode) {
+      case 'long gun':
+        this.drawPattern(longGun);
+        break;
+      case 'gospher glider gun':
+        this.drawPattern(gosperGliderGun);
+        break;
+      case 'random':
+      default:
+        this.pickRandomCells(this.startingCellNum);
+    }
+  }
+
+  private pickRandomCells(num: number) {
+    for (let i = 0; i < num; i++) {
+      const randomX = Math.floor(Math.random() * this.canvas.width);
+      const x = randomX - (randomX % this.cellSize);
+      const randomY = Math.floor(Math.random() * this.canvas.height);
+      const y = randomY - (randomY % this.cellSize);
+
+      const cell = this.cells.get(x + ',' + y);
+      if (cell) cell.active = true;
+    }
+  }
+
+  private drawPattern(pattern: string[]) {
+    let y =
+      Math.floor((this.canvas.height / this.cellSize / 2) * this.cellSize) -
+      Math.floor(pattern.length / 2) * this.cellSize -
+      this.cellSize;
+    let maxRowLength = pattern[0].length;
+    for (let row of pattern) {
+      if (row.length > maxRowLength) maxRowLength = row.length;
+    }
+    const initX =
+      Math.floor((Math.floor(this.canvas.width / this.cellSize) - maxRowLength) / 2) * this.cellSize - this.cellSize;
+    console.log(initX);
+    for (let j = 0; j < pattern.length; j++) {
+      let x = initX;
+      const row = pattern[j];
+      for (let i = 0; i < row.length; i++) {
+        x += this.cellSize;
+        if (row[i] === ' ') continue;
+        const cell = this.cells.get(x + ',' + y);
+        if (cell) cell.active = true;
+      }
+      y += this.cellSize;
+    }
   }
 }
 

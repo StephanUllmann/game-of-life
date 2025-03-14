@@ -1,6 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { Game } from '../lib/game';
+import { Game, seed } from '../lib/game';
 
 @customElement('game-of-life')
 export class GameOfLife extends LitElement {
@@ -22,6 +22,21 @@ export class GameOfLife extends LitElement {
   @property({ type: Boolean })
   controls = false;
 
+  @property({
+    converter: {
+      fromAttribute(value: string): seed {
+        // const validSeeds = ['random', 'glider', 'blinker', 'toad', 'beacon', 'pulsar', 'gosperGliderGun'];
+        const validSeeds = ['random', 'long gun', 'gospher glider gun'];
+        if (validSeeds.includes(value)) {
+          return value as seed;
+        }
+        console.warn(`Invalid seed value: "${value}". Using "random" instead.`);
+        return 'random';
+      },
+    },
+  })
+  seed: seed = 'random';
+
   @query('canvas')
   canvas!: HTMLCanvasElement;
 
@@ -35,12 +50,12 @@ export class GameOfLife extends LitElement {
   largePaint = true;
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this.game = new Game(this.canvas, this.color, this.bgColor, this.cellSize, this.startingCellNum);
+    this.game = new Game(this.canvas, this.color, this.bgColor, this.cellSize, this.startingCellNum, this.seed);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.game?.removeEventListeners();
+    this.game?.disconnect();
   }
 
   static styles?: CSSResultGroup | undefined = css`
@@ -120,11 +135,19 @@ export class GameOfLife extends LitElement {
         <input
           type="range"
           min="100"
-          max="4000"
+          max="2000"
           value=${this.interval}
           @change=${(e: InputEvent) => (this.interval = +(e.target as HTMLInputElement)!.value)}
         />
         <span>Interval: ${this.interval}ms</span>
+        <button
+          @click=${() => {
+            if (this.game) this.game.reset(this.seed);
+            this.running = false;
+          }}
+        >
+          Reset
+        </button>
       </div>`}
     `;
   }
