@@ -3,22 +3,26 @@ export class Game {
   private ctx;
   private cells: Map<string, Cell>;
   private gridPath: Path2D;
-  private gap = 20;
+  private cellSize = 20;
   private white = 'oklch(100% 0 0 / 30%)';
-  private whiteFull = 'oklch(100% 0 0 / 100%)';
+  // private whiteFull = 'oklch(100% 0 0 / 100%)';
   private strokeWidth = 1;
   private currMousePos = [0, 0];
   private currHoveredCell: Cell | null = null;
+  private color;
   private bgColor;
   private startingCellNum;
+  private intervalId: ReturnType<typeof setInterval> | null = null;
 
-  constructor(canvas: HTMLCanvasElement, bgColor: string, startingCellNum = 42) {
+  constructor(canvas: HTMLCanvasElement, color: string, bgColor: string, cellSize: number, startingCellNum = 42) {
     this.canvas = canvas;
     const rect = this.canvas.getBoundingClientRect();
     this.canvas.width = rect.width;
     this.canvas.height = rect.height;
+    this.color = color;
     this.bgColor = bgColor;
     this.startingCellNum = startingCellNum;
+    this.cellSize = cellSize;
     this.ctx = this.canvas.getContext('2d');
     this.cells = new Map<string, Cell>();
     this.gridPath = new Path2D();
@@ -28,34 +32,42 @@ export class Game {
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    // this.run = this.run.bind(this);
+    this.nextTick = this.nextTick.bind(this);
     this.setEventListeners();
     this.pickRandomCells(this.startingCellNum);
   }
 
   createGrid() {
     const tempCells = [];
-    for (let i = 0, j = 0; i < this.canvas.width; i += this.gap, j++) {
-      tempCells.push([i, i + this.gap]);
+    for (let i = 0, j = 0; i < this.canvas.width; i += this.cellSize, j++) {
+      tempCells.push([i, i + this.cellSize]);
       this.gridPath.moveTo(i, 0);
       this.gridPath.lineTo(i, this.canvas.height);
     }
-    for (let i = 0, j = 0; i < this.canvas.height; i += this.gap, j++) {
+    for (let i = 0, j = 0; i < this.canvas.height; i += this.cellSize, j++) {
       for (const cell of tempCells) {
-        const tl = cell[0] > 0 && i > 0 ? cell[0] - this.gap + ',' + (i - this.gap) : null;
-        const t = i > 0 ? cell[0] + ',' + (i - this.gap) : null;
-        const tr = cell[0] < this.canvas.width - this.gap && i > 0 ? cell[0] + this.gap + ',' + (i - this.gap) : null;
-        const l = cell[0] > 0 ? cell[0] - this.gap + ',' + i : null;
-        const r = cell[0] < this.canvas.width - this.gap ? cell[0] + this.gap + ',' + i : null;
-        const bl = cell[0] > 0 && i < this.canvas.height - this.gap ? cell[0] - this.gap + ',' + (i + this.gap) : null;
-        const b = i < this.canvas.height - this.gap ? cell[0] + ',' + (i + this.gap) : null;
+        const tl = cell[0] > 0 && i > 0 ? cell[0] - this.cellSize + ',' + (i - this.cellSize) : null;
+        const t = i > 0 ? cell[0] + ',' + (i - this.cellSize) : null;
+        const tr =
+          cell[0] < this.canvas.width - this.cellSize && i > 0
+            ? cell[0] + this.cellSize + ',' + (i - this.cellSize)
+            : null;
+        const l = cell[0] > 0 ? cell[0] - this.cellSize + ',' + i : null;
+        const r = cell[0] < this.canvas.width - this.cellSize ? cell[0] + this.cellSize + ',' + i : null;
+        const bl =
+          cell[0] > 0 && i < this.canvas.height - this.cellSize
+            ? cell[0] - this.cellSize + ',' + (i + this.cellSize)
+            : null;
+        const b = i < this.canvas.height - this.cellSize ? cell[0] + ',' + (i + this.cellSize) : null;
         const br =
-          cell[0] < this.canvas.width - this.gap && i < this.canvas.height - this.gap
-            ? cell[0] + this.gap + ',' + (i + this.gap)
+          cell[0] < this.canvas.width - this.cellSize && i < this.canvas.height - this.cellSize
+            ? cell[0] + this.cellSize + ',' + (i + this.cellSize)
             : null;
 
         const neighbours = [tl, t, tr, l, r, bl, b, br];
 
-        const newCell = new Cell([...cell, i, i + this.gap], this.ctx!, neighbours, this.whiteFull, this.bgColor);
+        const newCell = new Cell([...cell, i, i + this.cellSize], this.ctx!, neighbours, this.color, this.bgColor);
         this.cells.set(cell[0] + ',' + i, newCell);
       }
       this.gridPath.moveTo(0, i);
@@ -74,14 +86,15 @@ export class Game {
     this.canvas.removeEventListener('mousemove', this.handleMouseMove);
     this.canvas.removeEventListener('mouseleave', this.handleMouseLeave);
     this.canvas.removeEventListener('click', this.handleClick);
+    if (this.intervalId) clearInterval(this.intervalId);
   }
   handleMouseLeave() {
     this.currHoveredCell = null;
   }
 
   handleMouseMove(e: MouseEvent) {
-    const x = e.offsetX - (e.offsetX % this.gap);
-    const y = e.offsetY - (e.offsetY % this.gap);
+    const x = e.offsetX - (e.offsetX % this.cellSize);
+    const y = e.offsetY - (e.offsetY % this.cellSize);
     if (this.currMousePos[0] === x && this.currMousePos[1] === y) return;
     this.currMousePos[0] = x;
     this.currMousePos[1] = y;
@@ -112,9 +125,9 @@ export class Game {
   pickRandomCells(num: number) {
     for (let i = 0; i < num; i++) {
       const randomX = Math.floor(Math.random() * this.canvas.width);
-      const x = randomX - (randomX % this.gap);
+      const x = randomX - (randomX % this.cellSize);
       const randomY = Math.floor(Math.random() * this.canvas.height);
-      const y = randomY - (randomY % this.gap);
+      const y = randomY - (randomY % this.cellSize);
 
       const cell = this.cells.get(x + ',' + y);
       if (cell) cell.active = true;
@@ -136,6 +149,15 @@ export class Game {
   nextTick() {
     this.cells.forEach((c) => this.checkNeighbours(c));
     this.cells.forEach((c) => c.evalNextTick());
+  }
+
+  run(interval = 2000) {
+    if (!this.intervalId) this.intervalId = setInterval(this.nextTick, interval);
+  }
+
+  stop() {
+    if (this.intervalId) clearInterval(this.intervalId);
+    this.intervalId = null;
   }
 }
 

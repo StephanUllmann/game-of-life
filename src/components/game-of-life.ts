@@ -4,11 +4,38 @@ import { Game } from '../lib/game';
 
 @customElement('game-of-life')
 export class GameOfLife extends LitElement {
-  @property({ attribute: 'color' })
+  @property({ attribute: 'bg-color' })
   bgColor = 'darkslateblue';
+
+  @property({ attribute: 'color' })
+  color = 'white';
+
+  @property({ attribute: 'cell-size', type: Number })
+  cellSize = 20;
 
   @property({ type: Number, attribute: 'starting-number' })
   startingCellNum: number = 42;
+
+  @property({ type: Number })
+  interval: number = 1000;
+
+  @query('canvas')
+  canvas!: HTMLCanvasElement;
+
+  @state()
+  game: Game | null = null;
+
+  @state()
+  running = false;
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this.game = new Game(this.canvas, this.color, this.bgColor, this.cellSize, this.startingCellNum);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.game?.removeEventListeners();
+  }
 
   static styles?: CSSResultGroup | undefined = css`
     :host {
@@ -30,38 +57,42 @@ export class GameOfLife extends LitElement {
       inset: 0;
       z-index: 0;
     }
-    button {
+    .controls {
       position: absolute;
       bottom: -3rem;
     }
   `;
 
-  @query('canvas')
-  canvas!: HTMLCanvasElement;
-
-  @state()
-  game: Game | null = null;
-
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    this.game = new Game(this.canvas, this.bgColor, this.startingCellNum);
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.game?.removeEventListeners();
-  }
-
   render() {
     return html`
       <h1>Conway's Game of Life</h1>
       <canvas style="background-color: ${this.bgColor}"></canvas>
-      <button
-        @click=${() => {
-          if (this.game) this.game.nextTick();
-        }}
-      >
-        Next Tick
-      </button>
+      <div class="controls">
+        ${this.running
+          ? html`<button
+              @click=${() => {
+                if (this.game) this.game.stop();
+                this.running = false;
+              }}
+            >
+              Stop
+            </button>`
+          : html`<button
+                @click=${() => {
+                  if (this.game) this.game.run(this.interval);
+                  this.running = true;
+                }}
+              >
+                Run
+              </button>
+              <button
+                @click=${() => {
+                  if (this.game) this.game.nextTick();
+                }}
+              >
+                Next Tick
+              </button>`}
+      </div>
     `;
   }
 }
