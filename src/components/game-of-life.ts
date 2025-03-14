@@ -7,11 +7,14 @@ export class GameOfLife extends LitElement {
   @property({ attribute: 'color' })
   bgColor = 'darkslateblue';
 
+  @property({ type: Number, attribute: 'starting-number' })
+  startingCellNum: number = 42;
+
   static styles?: CSSResultGroup | undefined = css`
     :host {
       position: relative;
       width: 40rem;
-      height: 20rem;
+      height: 30rem;
     }
     h1 {
       position: absolute;
@@ -26,7 +29,6 @@ export class GameOfLife extends LitElement {
       height: 100%;
       inset: 0;
       z-index: 0;
-      /* pointer-events: all; */
     }
   `;
 
@@ -37,8 +39,7 @@ export class GameOfLife extends LitElement {
   game: Game | null = null;
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    // console.log(this.canvas);
-    this.game = new Game(this.canvas, this.bgColor);
+    this.game = new Game(this.canvas, this.bgColor, this.startingCellNum);
   }
 
   disconnectedCallback(): void {
