@@ -94,10 +94,9 @@ export class Game {
 
   handleClick() {
     if (this.currHoveredCell) this.currHoveredCell.active = !this.currHoveredCell.active;
-    console.log(this.currHoveredCell);
-    // this.currHoveredCell = null;
+    // if (this.currHoveredCell) this.checkNeighbours(this.currHoveredCell);
     this.currHoveredCell?.neighbours.forEach((n) => {
-      const c = this.cells.get(n);
+      const c = n ? this.cells.get(n) : null;
       if (c) c.active = !c.active;
     });
   }
@@ -121,23 +120,32 @@ export class Game {
       if (cell) cell.active = true;
     }
   }
+
+  checkNeighbours(cell: Cell) {
+    let livingNeighbours = 0;
+
+    for (let key of cell.neighbours) {
+      if (!key) continue;
+      if (this.cells.get(key)?.active) livingNeighbours++;
+    }
+
+    if (livingNeighbours < 2 || livingNeighbours > 3) cell.liveOnNextTick = false;
+    else cell.liveOnNextTick = true;
+  }
+
+  nextTick() {
+    this.cells.forEach((c) => this.checkNeighbours(c));
+    this.cells.forEach((c) => c.evalNextTick());
+  }
 }
-type Neighbours = {
-  tl: string | null;
-  t: string | null;
-  tr: string | null;
-  l: string | null;
-  r: string | null;
-  bl: string | null;
-  b: string | null;
-  br: string | null;
-};
+
 class Cell {
   private coordinates;
   private ctx;
   neighbours;
   private isActive = false;
   private colors;
+  liveOnNextTick = false;
 
   constructor(
     coordinates: number[],
@@ -164,8 +172,11 @@ class Cell {
 
   draw(color: string) {
     const [x1, x2, y1, y2] = this.coordinates;
-
     this.ctx.fillStyle = color;
     this.ctx.fillRect(x1 + 2, y1 + 2, x2 - x1 - 4, y2 - y1 - 4);
+  }
+
+  evalNextTick() {
+    this.active = this.liveOnNextTick;
   }
 }

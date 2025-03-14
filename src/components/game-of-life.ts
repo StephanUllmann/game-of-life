@@ -30,6 +30,10 @@ export class GameOfLife extends LitElement {
       inset: 0;
       z-index: 0;
     }
+    button {
+      position: absolute;
+      bottom: -3rem;
+    }
   `;
 
   @query('canvas')
@@ -51,6 +55,13 @@ export class GameOfLife extends LitElement {
     return html`
       <h1>Conway's Game of Life</h1>
       <canvas style="background-color: ${this.bgColor}"></canvas>
+      <button
+        @click=${() => {
+          if (this.game) this.game.nextTick();
+        }}
+      >
+        Next Tick
+      </button>
     `;
   }
 }
