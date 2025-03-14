@@ -18,6 +18,7 @@ export class Game {
   private startingCellNum;
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private largePaint = true;
+  private drawState = false;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -44,6 +45,7 @@ export class Game {
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
     // this.run = this.run.bind(this);
     this.nextTick = this.nextTick.bind(this);
     this.setEventListeners();
@@ -92,7 +94,7 @@ export class Game {
   private setEventListeners() {
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
     this.canvas.addEventListener('mouseleave', this.handleMouseLeave);
-    this.canvas.addEventListener('click', this.handleClick);
+    this.canvas.addEventListener('mousedown', this.handleMouseDown);
   }
 
   disconnect() {
@@ -102,12 +104,19 @@ export class Game {
   private removeEventListeners() {
     this.canvas.removeEventListener('mousemove', this.handleMouseMove);
     this.canvas.removeEventListener('mouseleave', this.handleMouseLeave);
-    this.canvas.removeEventListener('click', this.handleClick);
+    this.canvas.removeEventListener('mousedown', this.handleMouseDown);
     if (this.intervalId) clearInterval(this.intervalId);
   }
 
   private handleMouseLeave() {
     this.currHoveredCell = null;
+  }
+
+  private handleMouseDown() {
+    if (this.currHoveredCell) {
+      this.drawState = !this.currHoveredCell.active;
+    }
+    this.handleClick();
   }
 
   private handleMouseMove(e: MouseEvent) {
@@ -116,21 +125,18 @@ export class Game {
     if (this.currMousePos[0] === x && this.currMousePos[1] === y) return;
     this.currMousePos[0] = x;
     this.currMousePos[1] = y;
-    // let oldCell = this.currHoveredCell;
-    // if (this.currHoveredCell) this.currHoveredCell!.active = false;
     this.currHoveredCell = this.cells.get(x + ',' + y) || null;
-    // if (oldCell && !this.currHoveredCell?.active) oldCell!.active = false;
-    // if (this.currHoveredCell) this.currHoveredCell!.active = true;
+    if (e.buttons === 1) this.handleClick();
   }
 
   private handleClick() {
-    if (this.currHoveredCell) this.currHoveredCell.active = !this.currHoveredCell.active;
-    // if (this.currHoveredCell) this.checkNeighbours(this.currHoveredCell);
-    if (this.largePaint)
+    if (this.currHoveredCell) this.currHoveredCell.active = this.drawState;
+    if (this.currHoveredCell && this.largePaint) {
       this.currHoveredCell?.neighbours.forEach((n) => {
         const c = n ? this.cells.get(n) : null;
-        if (c) c.active = !c.active;
+        if (c) c.active = this.drawState;
       });
+    }
   }
 
   private drawGrid() {
@@ -223,7 +229,6 @@ export class Game {
     }
     const initX =
       Math.floor((Math.floor(this.canvas.width / this.cellSize) - maxRowLength) / 2) * this.cellSize - this.cellSize;
-    console.log(initX);
     for (let j = 0; j < pattern.length; j++) {
       let x = initX;
       const row = pattern[j];
@@ -245,6 +250,7 @@ class Cell {
   private isActive = false;
   private colors;
   liveOnNextTick = false;
+  id: string;
 
   constructor(
     coordinates: number[],
@@ -257,6 +263,7 @@ class Cell {
     this.ctx = ctx;
     this.neighbours = neighbours;
     this.colors = { active: activeColor, inactive: inactiveColor };
+    this.id = coordinates.join();
   }
 
   get active() {
