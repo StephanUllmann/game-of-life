@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { Game, seed } from '../lib/game';
+const validSeeds = ['random', 'long gun', 'gospher glider gun'];
 
 @customElement('game-of-life')
 export class GameOfLife extends LitElement {
@@ -26,7 +27,6 @@ export class GameOfLife extends LitElement {
     converter: {
       fromAttribute(value: string): seed {
         // const validSeeds = ['random', 'glider', 'blinker', 'toad', 'beacon', 'pulsar', 'gosperGliderGun'];
-        const validSeeds = ['random', 'long gun', 'gospher glider gun'];
         if (validSeeds.includes(value)) {
           return value as seed;
         }
@@ -148,6 +148,14 @@ export class GameOfLife extends LitElement {
         >
           Reset
         </button>
+        <select
+          @change=${(e: InputEvent) => {
+            if (this.game) this.game.reset((e.target as HTMLInputElement)!.value as seed);
+            this.running = false;
+          }}
+        >
+          ${validSeeds.map((seed) => html`<option value=${seed} ?selected=${this.seed === seed}>${seed}</option>`)}
+        </select>
       </div>`}
     `;
   }
