@@ -19,6 +19,9 @@ export class GameOfLife extends LitElement {
   @property({ type: Number })
   interval: number = 1000;
 
+  @property({ type: Boolean })
+  controls = false;
+
   @query('canvas')
   canvas!: HTMLCanvasElement;
 
@@ -70,7 +73,8 @@ export class GameOfLife extends LitElement {
     return html`
       <h1>Conway's Game of Life</h1>
       <canvas style="background-color: ${this.bgColor}"></canvas>
-      <div class="controls">
+      ${this.controls &&
+      html`<div class="controls">
         <button
           @click=${() => {
             if (this.game) {
@@ -121,7 +125,7 @@ export class GameOfLife extends LitElement {
           @change=${(e: InputEvent) => (this.interval = +(e.target as HTMLInputElement)!.value)}
         />
         <span>Interval: ${this.interval}ms</span>
-      </div>
+      </div>`}
     `;
   }
 }
