@@ -113,6 +113,14 @@ export class GameOfLife extends LitElement {
               >
                 Next Tick
               </button>`}
+        <input
+          type="range"
+          min="100"
+          max="4000"
+          value=${this.interval}
+          @change=${(e: InputEvent) => (this.interval = +(e.target as HTMLInputElement)!.value)}
+        />
+        <span>Interval: ${this.interval}ms</span>
       </div>
     `;
   }
