@@ -150,7 +150,8 @@ export class GameOfLife extends LitElement {
         </button>
         <select
           @change=${(e: InputEvent) => {
-            if (this.game) this.game.reset((e.target as HTMLInputElement)!.value as seed);
+            this.seed = (e.target as HTMLInputElement)!.value as seed;
+            if (this.game) this.game.reset(this.seed);
             this.running = false;
           }}
         >
