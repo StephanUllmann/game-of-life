@@ -1,8 +1,8 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
+import { CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { Game, seed } from '../lib/game';
 import { styles } from './game-of-life-styles';
-const validSeeds = ['random', 'long gun', 'gospher glider gun', 'blinker'];
+const validSeeds: seed[] = ['random', 'acorn', 'long gun', 'gospher glider gun', 'pulsar', 'spaceship'];
 
 @customElement('game-of-life')
 export class GameOfLife extends LitElement {
@@ -30,8 +30,7 @@ export class GameOfLife extends LitElement {
   @property({
     converter: {
       fromAttribute(value: string): seed {
-        // const validSeeds = ['random', 'glider', 'blinker', 'toad', 'beacon', 'pulsar', 'gosperGliderGun'];
-        if (validSeeds.includes(value)) {
+        if (validSeeds.includes(value as seed)) {
           return value as seed;
         }
         console.warn(`Invalid seed value: "${value}". Using "random" instead.`);

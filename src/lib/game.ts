@@ -1,6 +1,6 @@
-import { blinkBloom, gosperGliderGun, longGun } from './patterns';
+import { acorn, gosperGliderGun, longGun, pulsar, spaceship } from './patterns';
 
-export type seed = 'random' | 'long gun' | 'gospher glider gun' | 'blinker';
+export type seed = 'random' | 'acorn' | 'long gun' | 'gospher glider gun' | 'pulsar' | 'spaceship';
 
 export class Game {
   private canvas;
@@ -212,14 +212,20 @@ export class Game {
 
   private seed(mode: seed) {
     switch (mode) {
+      case 'acorn':
+        this.drawPattern(acorn);
+        break;
       case 'long gun':
         this.drawPattern(longGun);
         break;
       case 'gospher glider gun':
         this.drawPattern(gosperGliderGun);
         break;
-      case 'blinker':
-        this.drawPattern(blinkBloom);
+      case 'pulsar':
+        this.drawPattern(pulsar);
+        break;
+      case 'spaceship':
+        this.drawPattern(spaceship);
         break;
       case 'random':
       default:

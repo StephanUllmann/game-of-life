@@ -26,7 +26,7 @@ export const gosperGliderGun = [
   '                                    ',
 ];
 
-export const blinkBloom = [
+export const pulsar = [
   '  xxx   xxx  ',
   '             ',
   'x    x x    x',
@@ -41,3 +41,27 @@ export const blinkBloom = [
   '             ',
   '  xxx   xxx  ',
 ];
+
+export const spaceship = [
+  '                                                     x ',
+  '                                    x               x x',
+  '                          x x      x     xx        x   ',
+  '                          x    x    x xxxxxx    xx     ',
+  '                          x xxxxxxxx          x  x xxx ',
+  '                             x     x       xxxx    xxx ',
+  '                        xx                 xxx x       ',
+  '                     x  xx       xx        xx          ',
+  '                     x  x                              ',
+  '                    x                                  ',
+  '                     x  x                              ',
+  '                     x  xx       xx        xx          ',
+  '                        xx                 xxx x       ',
+  '                             x     x       xxxx    xxx ',
+  '                          x xxxxxxxx          x  x xxx ',
+  '                          x    x    x xxxxxx    xx     ',
+  '                          x x      x     xx        x   ',
+  '                                    x               x x',
+  '                                                     x ',
+];
+
+export const acorn = [' x     ', '   x   ', 'xx  xxx'];
