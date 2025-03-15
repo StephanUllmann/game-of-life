@@ -3,8 +3,6 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     position: relative;
-    width: 40rem;
-    height: 30rem;
   }
   h1 {
     position: absolute;

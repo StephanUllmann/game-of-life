@@ -6,7 +6,7 @@ export class Game {
   private canvas;
   private ctx;
   private cells: Map<string, Cell>;
-  private gridPath: Path2D;
+  private gridPath: Path2D | undefined;
   private cellSize = 20;
   private white = 'oklch(100% 0 0 / 30%)';
   // private whiteFull = 'oklch(100% 0 0 / 100%)';
@@ -19,7 +19,7 @@ export class Game {
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private largePaint = true;
   private drawState = false;
-  private drawConsole = false;
+  // private drawConsole = false;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -27,22 +27,22 @@ export class Game {
     bgColor: string,
     cellSize: number,
     startingCellNum = 42,
-    seed: seed,
-    drawConsole: boolean
+    seed: seed
+    // drawConsole: boolean
   ) {
     this.canvas = canvas;
-    const rect = this.canvas.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height;
+
     this.color = color;
     this.bgColor = bgColor;
     this.startingCellNum = startingCellNum;
     this.cellSize = cellSize;
-    this.drawConsole = drawConsole;
+    // this.drawConsole = drawConsole;
     this.ctx = this.canvas.getContext('2d');
     this.cells = new Map<string, Cell>();
-    this.gridPath = new Path2D();
 
+    const rect = this.canvas.getBoundingClientRect();
+    this.canvas.width = rect.width;
+    this.canvas.height = rect.height;
     this.createGrid();
 
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -56,7 +56,19 @@ export class Game {
     // this.cells.forEach((c) => this.checkNeighbours(c));
   }
 
+  resize() {
+    const currPattern = this.getCurrentPattern();
+    this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const rect = this.canvas.getBoundingClientRect();
+    this.canvas.width = rect.width;
+    this.canvas.height = rect.height;
+    this.createGrid();
+    this.drawPattern(currPattern);
+  }
+
   createGrid() {
+    this.cells.clear();
+    this.gridPath = new Path2D();
     const tempCells = [];
     for (let i = 0, j = 0; i < this.canvas.width; i += this.cellSize, j++) {
       tempCells.push([i, i + this.cellSize]);
@@ -176,21 +188,35 @@ export class Game {
   stop() {
     if (this.intervalId) clearInterval(this.intervalId);
     this.intervalId = null;
-    if (this.drawConsole) this.drawPatternToConsole();
+    // if (this.drawConsole) console.log(this.getCurrentPattern());
   }
 
-  drawPatternToConsole() {
+  getCurrentPattern() {
     const pattern = Array(Math.floor(this.canvas.height / this.cellSize))
       .fill(null)
       .map(() => Array(Math.floor(this.canvas.width / this.cellSize)).fill(' '));
+
+    let smallestX = Infinity;
+    let largestX = 0;
 
     for (let [coordinates, cell] of this.cells.entries()) {
       const [x, y] = coordinates.split(',').map((c) => Math.floor(Number(c) / this.cellSize));
       if (cell.active) {
         pattern[y][x] = 'x';
+        if (x < smallestX) smallestX = x;
+        if (x > largestX) largestX = x;
       }
     }
-    console.log(pattern.map((row) => row.join('')));
+    const outPattern = pattern.map((row) => row.join('').substring(smallestX, largestX + 1));
+    let rightPointer = outPattern.length - 1;
+    while (outPattern[rightPointer].trim().length === 0) {
+      outPattern.pop();
+      rightPointer--;
+    }
+    while (outPattern[0].trim().length === 0) {
+      outPattern.shift();
+    }
+    return outPattern;
   }
 
   clear() {

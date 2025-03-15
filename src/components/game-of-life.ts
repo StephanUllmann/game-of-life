@@ -27,6 +27,9 @@ export class GameOfLife extends LitElement {
   @property({ attribute: 'draw-console', type: Boolean })
   drawConsole = false;
 
+  @property({ type: String })
+  size: 'large' | 'medium' | 'small' = 'large';
+
   @property({
     converter: {
       fromAttribute(value: string): seed {
@@ -59,8 +62,8 @@ export class GameOfLife extends LitElement {
       this.bgColor,
       this.cellSize,
       this.startingCellNum,
-      this.seed,
-      this.drawConsole
+      this.seed
+      // this.drawConsole
     );
   }
 
@@ -72,7 +75,21 @@ export class GameOfLife extends LitElement {
   static styles?: CSSResultGroup | undefined = styles;
 
   render() {
+    const largeCanvas = html`<style>
+      :host {
+        width: 100rem;
+        height: 50rem;
+      }
+    </style>`;
+    const smallCanvas = html`<style>
+      :host {
+        width: 40rem;
+        height: 30rem;
+      }
+    </style>`;
+
     return html`
+      ${this.size === 'large' ? largeCanvas : ''} ${this.size === 'small' ? smallCanvas : ''}
       <h1>Conway's Game of Life</h1>
       <canvas style="background-color: ${this.bgColor}"></canvas>
       ${this.controls &&
@@ -150,6 +167,38 @@ export class GameOfLife extends LitElement {
         >
           ${validSeeds.map((seed) => html`<option value=${seed} ?selected=${this.seed === seed}>${seed}</option>`)}
         </select>
+        ${this.drawConsole
+          ? html`<button @click=${() => console.log(this.game?.getCurrentPattern())}>Print to Console</button>`
+          : ''}
+        <label
+          >Large
+          <input
+            type="radio"
+            name="size"
+            value="large"
+            @change=${(e: InputEvent) => {
+              this.size = (e.target as HTMLInputElement)!.value as 'large';
+              setTimeout(() => {
+                this.game?.resize();
+              }, 0);
+            }}
+            ?checked=${this.size === 'large'}
+        /></label>
+        <label>
+          Small
+          <input
+            type="radio"
+            name="size"
+            value="small"
+            @change=${(e: InputEvent) => {
+              this.size = (e.target as HTMLInputElement)!.value as 'small';
+              setTimeout(() => {
+                this.game?.resize();
+              }, 0);
+            }}
+            ?checked=${this.size === 'small'}
+          />
+        </label>
       </div>`}
     `;
   }
