@@ -1,6 +1,6 @@
-import { gosperGliderGun, longGun } from './patterns';
+import { blinkBloom, gosperGliderGun, longGun } from './patterns';
 
-export type seed = 'random' | 'long gun' | 'gospher glider gun';
+export type seed = 'random' | 'long gun' | 'gospher glider gun' | 'blinker';
 
 export class Game {
   private canvas;
@@ -19,6 +19,7 @@ export class Game {
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private largePaint = true;
   private drawState = false;
+  private drawConsole = false;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -26,7 +27,8 @@ export class Game {
     bgColor: string,
     cellSize: number,
     startingCellNum = 42,
-    seed: seed
+    seed: seed,
+    drawConsole: boolean
   ) {
     this.canvas = canvas;
     const rect = this.canvas.getBoundingClientRect();
@@ -36,6 +38,7 @@ export class Game {
     this.bgColor = bgColor;
     this.startingCellNum = startingCellNum;
     this.cellSize = cellSize;
+    this.drawConsole = drawConsole;
     this.ctx = this.canvas.getContext('2d');
     this.cells = new Map<string, Cell>();
     this.gridPath = new Path2D();
@@ -173,6 +176,21 @@ export class Game {
   stop() {
     if (this.intervalId) clearInterval(this.intervalId);
     this.intervalId = null;
+    if (this.drawConsole) this.drawPatternToConsole();
+  }
+
+  drawPatternToConsole() {
+    const pattern = Array(Math.floor(this.canvas.height / this.cellSize))
+      .fill(null)
+      .map(() => Array(Math.floor(this.canvas.width / this.cellSize)).fill(' '));
+
+    for (let [coordinates, cell] of this.cells.entries()) {
+      const [x, y] = coordinates.split(',').map((c) => Math.floor(Number(c) / this.cellSize));
+      if (cell.active) {
+        pattern[y][x] = 'x';
+      }
+    }
+    console.log(pattern.map((row) => row.join('')));
   }
 
   clear() {
@@ -199,6 +217,9 @@ export class Game {
         break;
       case 'gospher glider gun':
         this.drawPattern(gosperGliderGun);
+        break;
+      case 'blinker':
+        this.drawPattern(blinkBloom);
         break;
       case 'random':
       default:

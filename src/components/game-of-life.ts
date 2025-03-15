@@ -1,7 +1,8 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { Game, seed } from '../lib/game';
-const validSeeds = ['random', 'long gun', 'gospher glider gun'];
+import { styles } from './game-of-life-styles';
+const validSeeds = ['random', 'long gun', 'gospher glider gun', 'blinker'];
 
 @customElement('game-of-life')
 export class GameOfLife extends LitElement {
@@ -22,6 +23,9 @@ export class GameOfLife extends LitElement {
 
   @property({ type: Boolean })
   controls = false;
+
+  @property({ attribute: 'draw-console', type: Boolean })
+  drawConsole = false;
 
   @property({
     converter: {
@@ -50,7 +54,15 @@ export class GameOfLife extends LitElement {
   largePaint = true;
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this.game = new Game(this.canvas, this.color, this.bgColor, this.cellSize, this.startingCellNum, this.seed);
+    this.game = new Game(
+      this.canvas,
+      this.color,
+      this.bgColor,
+      this.cellSize,
+      this.startingCellNum,
+      this.seed,
+      this.drawConsole
+    );
   }
 
   disconnectedCallback(): void {
@@ -58,31 +70,7 @@ export class GameOfLife extends LitElement {
     this.game?.disconnect();
   }
 
-  static styles?: CSSResultGroup | undefined = css`
-    :host {
-      position: relative;
-      width: 40rem;
-      height: 30rem;
-    }
-    h1 {
-      position: absolute;
-      top: -1.75rem;
-      margin: 0;
-      font-size: 1.5rem;
-    }
-
-    canvas {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      inset: 0;
-      z-index: 0;
-    }
-    .controls {
-      position: absolute;
-      bottom: -3rem;
-    }
-  `;
+  static styles?: CSSResultGroup | undefined = styles;
 
   render() {
     return html`
