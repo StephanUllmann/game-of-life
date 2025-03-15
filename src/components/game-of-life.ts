@@ -10,6 +10,7 @@ const validSeeds: seed[] = [
   'simkin glider gun',
   'pulsar',
   'spaceship',
+  'long frame',
 ];
 
 @customElement('game-of-life')
