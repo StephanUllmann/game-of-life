@@ -1,6 +1,13 @@
-import { acorn, gosperGliderGun, longGun, pulsar, spaceship } from './patterns';
+import { acorn, gosperGliderGun, longGun, pulsar, simkinGliderGun, spaceship } from './patterns';
 
-export type seed = 'random' | 'acorn' | 'long gun' | 'gospher glider gun' | 'pulsar' | 'spaceship';
+export type seed =
+  | 'random'
+  | 'acorn'
+  | 'long gun'
+  | 'gospher glider gun'
+  | 'simkin glider gun'
+  | 'pulsar'
+  | 'spaceship';
 
 export class Game {
   private canvas;
@@ -246,6 +253,9 @@ export class Game {
         break;
       case 'gospher glider gun':
         this.drawPattern(gosperGliderGun);
+        break;
+      case 'simkin glider gun':
+        this.drawPattern(simkinGliderGun);
         break;
       case 'pulsar':
         this.drawPattern(pulsar);

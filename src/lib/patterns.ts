@@ -65,3 +65,27 @@ export const spaceship = [
 ];
 
 export const acorn = [' x     ', '   x   ', 'xx  xxx'];
+
+export const simkinGliderGun = [
+  'xx     xx                        ',
+  'xx     xx                        ',
+  '                                 ',
+  '    xx                           ',
+  '    xx                           ',
+  '                                 ',
+  '                                 ',
+  '                                 ',
+  '                                 ',
+  '                      xx xx      ',
+  '                     x     x     ',
+  '                     x      x  xx',
+  '                     xxx   x   xx',
+  '                          x      ',
+  '                                 ',
+  '                                 ',
+  '                                 ',
+  '                    xx           ',
+  '                    x            ',
+  '                     xxx         ',
+  '                       x         ',
+];

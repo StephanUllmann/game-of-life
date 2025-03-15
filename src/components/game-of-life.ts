@@ -2,7 +2,15 @@ import { CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { Game, seed } from '../lib/game';
 import { styles } from './game-of-life-styles';
-const validSeeds: seed[] = ['random', 'acorn', 'long gun', 'gospher glider gun', 'pulsar', 'spaceship'];
+const validSeeds: seed[] = [
+  'random',
+  'acorn',
+  'long gun',
+  'gospher glider gun',
+  'simkin glider gun',
+  'pulsar',
+  'spaceship',
+];
 
 @customElement('game-of-life')
 export class GameOfLife extends LitElement {
