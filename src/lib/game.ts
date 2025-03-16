@@ -9,7 +9,7 @@ export const ALL_SEEDS = {
   pulsar: pulsar,
   spaceship: spaceship,
   'long frame': longFrame,
-  wbs: wbs,
+  WBS: wbs,
 } as const;
 
 export type seed = keyof typeof ALL_SEEDS;

@@ -87,4 +87,8 @@ export const styles = css`
   .control-play {
     right: 3.5rem;
   }
+
+  .controls select {
+    text-transform: capitalize;
+  }
 `;
