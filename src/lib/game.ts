@@ -268,8 +268,7 @@ export class Game {
   private drawPattern(pattern: string[]) {
     let y =
       Math.floor((this.canvas.height / this.cellSize / 2) * this.cellSize) -
-      Math.floor(pattern.length / 2) * this.cellSize -
-      this.cellSize;
+      Math.floor(pattern.length / 2) * this.cellSize;
     let maxRowLength = pattern[0].length;
     for (let row of pattern) {
       if (row.length > maxRowLength) maxRowLength = row.length;

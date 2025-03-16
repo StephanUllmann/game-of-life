@@ -84,4 +84,7 @@ export const styles = css`
       --color: #00000065;
     }
   }
+  .control-play {
+    right: 3.5rem;
+  }
 `;
