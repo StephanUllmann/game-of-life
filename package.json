@@ -1,13 +1,36 @@
 {
-  "name": "game-of-life",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@stephanullmann/lit-game-of-life",
+  "version": "0.0.1",
+  "description": "Conway's Game of Life implemented as a Lit web component",
   "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
+  "keywords": [
+    "game-of-life",
+    "conway",
+    "web-component",
+    "lit",
+    "lit-element",
+    "custom-element"
+  ],
+  "author": "Stephan Ullmann",
+  "license": "MIT",
   "dependencies": {
     "lit": "^3.2.1"
   },
