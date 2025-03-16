@@ -2,7 +2,6 @@
 
 A customizable Conway's Game of Life implementation as a web component built with Lit.
 
-
 ## Properties
 
 The component accepts the following attributes:
@@ -24,14 +23,15 @@ The component accepts the following attributes:
 The component comes with several predefined patterns:
 
 - `random`: Randomly placed cells (default)
-- `acorn`: A small methuselah pattern that grows significantly
-- `long gun`: A pattern that produces gliders
+- `acorn`: A small pattern that grows significantly
+- `long gun`: A pattern that procreates across the canvas
 - `gospher glider gun`: The first known gun pattern, periodically creates gliders
 - `simkin glider gun`: Another type of glider gun
 - `pulsar`: A highly symmetric period 3 oscillator
 - `spaceship`: A pattern that moves across the grid
 - `long frame`: A large stable pattern
-- `WBS`: A complex pattern with interesting behavior
+- `WBS`: A long living pattern from letters
+- More to be added
 
 ## Examples
 
@@ -69,7 +69,6 @@ The component comes with several predefined patterns:
 - Canvas size options
 - Cell painting capabilities with standard (1 cell) and large (3x3) brush options
 - Pattern reset and clear functions
-- Responsive canvas that adjusts to container size
 
 ## Game Rules
 
@@ -89,14 +88,14 @@ When the `controls` attribute is enabled, the component provides the following u
 - Pattern selector: Choose from predefined patterns
 - Paint toggle: Switch between 1-cell and 9-cell painting mode
 - Clear button: Remove all active cells
-- Step button: Advance one generation when paused
+- Step button: Advance one generation
 - Speed slider: Adjust simulation interval
 - Size selector: Switch between canvas sizes
 - Reset button: Return to initial pattern
 
 ## Methods
 
-The component exposes the following methods:
+The Game class exposes the following methods:
 
 - `play()`: Start the simulation
 - `stop()`: Stop the simulation
@@ -105,17 +104,6 @@ The component exposes the following methods:
 - `reset(seed)`: Reset to specified pattern
 - `clear()`: Remove all cells
 - `toggleLargePaint()`: Switch between normal and large painting mode
-
-## Implementation Details
-
-The Game of Life implementation:
-
-- Uses a canvas element for efficient rendering
-- Stores cells in a Map for fast access
-- Implements standard Conway's Game of Life rules
-- Supports interactive cell painting
-- Centers patterns on the canvas automatically
-- Provides responsive resizing
 
 ## Browser Support
 
