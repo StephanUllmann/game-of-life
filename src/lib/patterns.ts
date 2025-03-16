@@ -172,3 +172,18 @@ export const longFrame = [
   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
 ];
+
+export const wbs = [
+  'xx             x    xxxx        xxxxx',
+  ' x            x     xx  xx      x    ',
+  ' xx           x      x   x      xx   ',
+  '  x          xx      x  xx       xx  ',
+  '  x    x     x       xxxx         xxx',
+  '  x   xxx   xx       x   xxx        x',
+  '  xx xx xx  x       xx     x        x',
+  '   xxx   x xx       x      x        x',
+  '   xx    xxx        x     xx        x',
+  '   xx     xx        x    xx        xx',
+  '                    xxxxxx   xx   xx ',
+  '                              xxxx   ',
+];

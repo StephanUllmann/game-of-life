@@ -1,14 +1,18 @@
-import { acorn, gosperGliderGun, longFrame, longGun, pulsar, simkinGliderGun, spaceship } from './patterns';
+import { acorn, gosperGliderGun, longFrame, longGun, pulsar, simkinGliderGun, spaceship, wbs } from './patterns';
 
-export type seed =
-  | 'random'
-  | 'acorn'
-  | 'long gun'
-  | 'gospher glider gun'
-  | 'simkin glider gun'
-  | 'pulsar'
-  | 'spaceship'
-  | 'long frame';
+export const ALL_SEEDS = {
+  random: acorn,
+  acorn: acorn,
+  'long gun': longGun,
+  'gospher glider gun': gosperGliderGun,
+  'simkin glider gun': simkinGliderGun,
+  pulsar: pulsar,
+  spaceship: spaceship,
+  'long frame': longFrame,
+  wbs: wbs,
+} as const;
+
+export type seed = keyof typeof ALL_SEEDS;
 
 export class Game {
   private canvas;
@@ -25,7 +29,7 @@ export class Game {
   private bgColor;
   private startingCellNum;
   private intervalId: ReturnType<typeof setInterval> | null = null;
-  private largePaint = true;
+  private largePaint = false;
   private drawState = false;
   // private drawConsole = false;
 
@@ -245,32 +249,8 @@ export class Game {
   }
 
   private seed(mode: seed) {
-    switch (mode) {
-      case 'acorn':
-        this.drawPattern(acorn);
-        break;
-      case 'long gun':
-        this.drawPattern(longGun);
-        break;
-      case 'gospher glider gun':
-        this.drawPattern(gosperGliderGun);
-        break;
-      case 'simkin glider gun':
-        this.drawPattern(simkinGliderGun);
-        break;
-      case 'pulsar':
-        this.drawPattern(pulsar);
-        break;
-      case 'spaceship':
-        this.drawPattern(spaceship);
-        break;
-      case 'long frame':
-        this.drawPattern(longFrame);
-        break;
-      case 'random':
-      default:
-        this.pickRandomCells(this.startingCellNum);
-    }
+    if (mode === 'random') this.pickRandomCells(this.startingCellNum);
+    else this.drawPattern(ALL_SEEDS[mode]);
   }
 
   private pickRandomCells(num: number) {

@@ -27,6 +27,7 @@ body {
   display: flex;
   place-items: center;
   justify-content: center;
+  flex-direction: column;
   min-width: 100dvw;
   min-height: 100dvh;
 }
