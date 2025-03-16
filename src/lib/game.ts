@@ -78,44 +78,93 @@ export class Game {
     this.drawPattern(currPattern);
   }
 
+  // createGrid() {
+  //   this.cells.clear();
+  //   this.gridPath = new Path2D();
+  //   const tempCells = [];
+  //   for (let i = 0; i < this.canvas.width; i += this.cellSize) {
+  //     tempCells.push([i, i + this.cellSize]);
+  //     this.gridPath.moveTo(i, 0);
+  //     this.gridPath.lineTo(i, this.canvas.height);
+  //   }
+  //   for (let i = 0; i < this.canvas.height; i += this.cellSize) {
+  //     for (const cell of tempCells) {
+  //       const tl = cell[0] > 0 && i > 0 ? cell[0] - this.cellSize + ',' + (i - this.cellSize) : null;
+  //       const t = i > 0 ? cell[0] + ',' + (i - this.cellSize) : null;
+  //       const tr =
+  //         cell[0] < this.canvas.width - this.cellSize && i > 0
+  //           ? cell[0] + this.cellSize + ',' + (i - this.cellSize)
+  //           : null;
+  //       const l = cell[0] > 0 ? cell[0] - this.cellSize + ',' + i : null;
+  //       const r = cell[0] < this.canvas.width - this.cellSize ? cell[0] + this.cellSize + ',' + i : null;
+  //       const bl =
+  //         cell[0] > 0 && i < this.canvas.height - this.cellSize
+  //           ? cell[0] - this.cellSize + ',' + (i + this.cellSize)
+  //           : null;
+  //       const b = i < this.canvas.height - this.cellSize ? cell[0] + ',' + (i + this.cellSize) : null;
+  //       const br =
+  //         cell[0] < this.canvas.width - this.cellSize && i < this.canvas.height - this.cellSize
+  //           ? cell[0] + this.cellSize + ',' + (i + this.cellSize)
+  //           : null;
+
+  //       const neighbours = [tl, t, tr, l, r, bl, b, br];
+
+  //       const newCell = new Cell([...cell, i, i + this.cellSize], this.ctx!, neighbours, this.color, this.bgColor);
+  //       this.cells.set(cell[0] + ',' + i, newCell);
+  //     }
+  //     this.gridPath.moveTo(0, i);
+  //     this.gridPath.lineTo(this.canvas.width, i);
+  //   }
+  //   this.drawGrid();
+  // }
+
   createGrid() {
     this.cells.clear();
     this.gridPath = new Path2D();
-    const tempCells = [];
-    for (let i = 0, j = 0; i < this.canvas.width; i += this.cellSize, j++) {
-      tempCells.push([i, i + this.cellSize]);
-      this.gridPath.moveTo(i, 0);
-      this.gridPath.lineTo(i, this.canvas.height);
+
+    for (let x = 0; x <= this.canvas.width; x += this.cellSize) {
+      this.gridPath.moveTo(x, 0);
+      this.gridPath.lineTo(x, this.canvas.height);
     }
-    for (let i = 0, j = 0; i < this.canvas.height; i += this.cellSize, j++) {
-      for (const cell of tempCells) {
-        const tl = cell[0] > 0 && i > 0 ? cell[0] - this.cellSize + ',' + (i - this.cellSize) : null;
-        const t = i > 0 ? cell[0] + ',' + (i - this.cellSize) : null;
-        const tr =
-          cell[0] < this.canvas.width - this.cellSize && i > 0
-            ? cell[0] + this.cellSize + ',' + (i - this.cellSize)
-            : null;
-        const l = cell[0] > 0 ? cell[0] - this.cellSize + ',' + i : null;
-        const r = cell[0] < this.canvas.width - this.cellSize ? cell[0] + this.cellSize + ',' + i : null;
-        const bl =
-          cell[0] > 0 && i < this.canvas.height - this.cellSize
-            ? cell[0] - this.cellSize + ',' + (i + this.cellSize)
-            : null;
-        const b = i < this.canvas.height - this.cellSize ? cell[0] + ',' + (i + this.cellSize) : null;
-        const br =
-          cell[0] < this.canvas.width - this.cellSize && i < this.canvas.height - this.cellSize
-            ? cell[0] + this.cellSize + ',' + (i + this.cellSize)
-            : null;
+    for (let y = 0; y <= this.canvas.height; y += this.cellSize) {
+      this.gridPath.moveTo(0, y);
+      this.gridPath.lineTo(this.canvas.width, y);
+    }
 
-        const neighbours = [tl, t, tr, l, r, bl, b, br];
-
-        const newCell = new Cell([...cell, i, i + this.cellSize], this.ctx!, neighbours, this.color, this.bgColor);
-        this.cells.set(cell[0] + ',' + i, newCell);
+    for (let y = 0; y < this.canvas.height; y += this.cellSize) {
+      for (let x = 0; x < this.canvas.width; x += this.cellSize) {
+        const neighborCoords = this.getNeighborCoordinates(x, y);
+        const newCell = new Cell(
+          [x, x + this.cellSize, y, y + this.cellSize],
+          this.ctx!,
+          neighborCoords,
+          this.color,
+          this.bgColor
+        );
+        this.cells.set(x + ',' + y, newCell);
       }
-      this.gridPath.moveTo(0, i);
-      this.gridPath.lineTo(this.canvas.width, i);
     }
+
     this.drawGrid();
+  }
+
+  getNeighborCoordinates(x: number, y: number) {
+    const neighbors = [];
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (dx === 0 && dy === 0) continue; // Skip self
+
+        const nx = x + dx * this.cellSize;
+        const ny = y + dy * this.cellSize;
+
+        if (nx >= 0 && nx < this.canvas.width && ny >= 0 && ny < this.canvas.height) {
+          neighbors.push(nx + ',' + ny);
+        } else {
+          neighbors.push(null);
+        }
+      }
+    }
+    return neighbors;
   }
 
   private setEventListeners() {
@@ -317,6 +366,7 @@ class Cell {
   }
 
   set active(val: boolean) {
+    if (this.isActive === val) return;
     this.isActive = val;
     const color = val ? this.colors.active : this.colors.inactive;
     this.draw(color);

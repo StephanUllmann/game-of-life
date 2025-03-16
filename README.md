@@ -2,25 +2,6 @@
 
 A customizable Conway's Game of Life implementation as a web component built with Lit.
 
-## Installation
-
-```bash
-npm install game-of-life-webcomponent
-```
-
-## Usage
-
-Import the component in your JavaScript or TypeScript file:
-
-```javascript
-import 'game-of-life-webcomponent';
-```
-
-Then use it in your HTML:
-
-```html
-<game-of-life></game-of-life>
-```
 
 ## Properties
 

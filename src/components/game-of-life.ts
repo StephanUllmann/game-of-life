@@ -101,11 +101,17 @@ export class GameOfLife extends LitElement {
         width: 100rem;
         height: 50rem;
       }
+      button {
+        --bg-color: ${this.bgColor};
+      }
     </style>`;
     const smallCanvas = html`<style>
       :host {
         width: 40rem;
         height: 30rem;
+      }
+      button {
+        --bg-color: ${this.bgColor};
       }
     </style>`;
 
@@ -181,14 +187,14 @@ export class GameOfLife extends LitElement {
             </button>
             ${this.running
               ? html`<button @click=${this.stop}>Stop</button>`
-              : html`<button @click=${this.play}>Run</button>
-                  <button
-                    @click=${() => {
-                      if (this.game) this.game.nextTick();
-                    }}
-                  >
-                    Next Tick
-                  </button>`}
+              : html`<button @click=${this.play}>Run</button> `}
+            <button
+              @click=${() => {
+                if (this.game) this.game.nextTick();
+              }}
+            >
+              Next Tick
+            </button>
             <div class="control-group">
               <input
                 type="range"

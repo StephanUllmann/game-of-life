@@ -24,9 +24,9 @@ export const styles = css`
     position: absolute;
     top: 0;
     right: 0;
-    background-color: #ffffff36;
+    background-color: #37414736;
     padding: 0.5rem;
-    border: 1px solid var(--color);
+    border: 2px solid var(--color);
     inset-block: 50%;
     border-radius: 5px 0 0 5px;
     height: fit-content;
@@ -49,10 +49,19 @@ export const styles = css`
     gap: 0.75rem;
     top: 0;
 
-    button {
+    button,
+    select,
+    input {
       cursor: pointer;
       border: none;
       border-radius: 5px;
+      background-color: var(--bg-color, #2e3155);
+      padding: 0.25rem;
+      accent-color: hsl(from var(--bg-color, #2e3155) h s calc(l * 1.75));
+      transition: background-color 125ms ease-in-out;
+      &:hover {
+        background-color: hsl(from var(--bg-color, #2e3155) h s calc(l * 1.25));
+      }
     }
   }
 
