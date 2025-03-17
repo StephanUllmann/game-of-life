@@ -52,6 +52,7 @@ export const styles = css`
     button,
     select,
     input {
+      font: inherit;
       cursor: pointer;
       border: none;
       border-radius: 5px;
@@ -62,6 +63,13 @@ export const styles = css`
       &:hover {
         background-color: hsl(from var(--bg-color, #2e3155) h s calc(l * 1.25));
       }
+    }
+    button,
+    label,
+    select,
+    input,
+    option {
+      color: var(--text-color, #ffffff);
     }
   }
 
