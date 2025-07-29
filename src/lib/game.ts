@@ -12,34 +12,29 @@ export const ALL_SEEDS = {
   WBS: wbs,
 } as const;
 
-export type seed = keyof typeof ALL_SEEDS;
+export type Seed = keyof typeof ALL_SEEDS;
 
 export class Game {
-  private canvas;
   private ctx;
   private cells: Map<string, Cell>;
   private gridPath: Path2D | undefined;
-  private cellSize = 20;
   private white = 'oklch(100% 0 0 / 30%)';
   // private whiteFull = 'oklch(100% 0 0 / 100%)';
   private strokeWidth = 1;
   private currMousePos = [0, 0];
   private currHoveredCell: Cell | null = null;
-  private color;
-  private bgColor;
-  private startingCellNum;
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private largePaint = false;
   private drawState = false;
   // private drawConsole = false;
 
   constructor(
-    canvas: HTMLCanvasElement,
-    color: string,
-    bgColor: string,
-    cellSize: number,
-    startingCellNum = 42,
-    seed: seed
+    private canvas: HTMLCanvasElement,
+    private color: string,
+    private bgColor: string,
+    private cellSize: number = 20,
+    private startingCellNum = 42,
+    seed: Seed
     // drawConsole: boolean
   ) {
     this.canvas = canvas;
@@ -77,46 +72,6 @@ export class Game {
     this.createGrid();
     this.drawPattern(currPattern);
   }
-
-  // createGrid() {
-  //   this.cells.clear();
-  //   this.gridPath = new Path2D();
-  //   const tempCells = [];
-  //   for (let i = 0; i < this.canvas.width; i += this.cellSize) {
-  //     tempCells.push([i, i + this.cellSize]);
-  //     this.gridPath.moveTo(i, 0);
-  //     this.gridPath.lineTo(i, this.canvas.height);
-  //   }
-  //   for (let i = 0; i < this.canvas.height; i += this.cellSize) {
-  //     for (const cell of tempCells) {
-  //       const tl = cell[0] > 0 && i > 0 ? cell[0] - this.cellSize + ',' + (i - this.cellSize) : null;
-  //       const t = i > 0 ? cell[0] + ',' + (i - this.cellSize) : null;
-  //       const tr =
-  //         cell[0] < this.canvas.width - this.cellSize && i > 0
-  //           ? cell[0] + this.cellSize + ',' + (i - this.cellSize)
-  //           : null;
-  //       const l = cell[0] > 0 ? cell[0] - this.cellSize + ',' + i : null;
-  //       const r = cell[0] < this.canvas.width - this.cellSize ? cell[0] + this.cellSize + ',' + i : null;
-  //       const bl =
-  //         cell[0] > 0 && i < this.canvas.height - this.cellSize
-  //           ? cell[0] - this.cellSize + ',' + (i + this.cellSize)
-  //           : null;
-  //       const b = i < this.canvas.height - this.cellSize ? cell[0] + ',' + (i + this.cellSize) : null;
-  //       const br =
-  //         cell[0] < this.canvas.width - this.cellSize && i < this.canvas.height - this.cellSize
-  //           ? cell[0] + this.cellSize + ',' + (i + this.cellSize)
-  //           : null;
-
-  //       const neighbours = [tl, t, tr, l, r, bl, b, br];
-
-  //       const newCell = new Cell([...cell, i, i + this.cellSize], this.ctx!, neighbours, this.color, this.bgColor);
-  //       this.cells.set(cell[0] + ',' + i, newCell);
-  //     }
-  //     this.gridPath.moveTo(0, i);
-  //     this.gridPath.lineTo(this.canvas.width, i);
-  //   }
-  //   this.drawGrid();
-  // }
 
   createGrid() {
     this.cells.clear();
@@ -226,7 +181,7 @@ export class Game {
   private checkNeighbours(cell: Cell) {
     let livingNeighbours = 0;
 
-    for (let key of cell.neighbours) {
+    for (const key of cell.neighbours) {
       if (!key) continue;
       if (this.cells.get(key)?.active) livingNeighbours++;
     }
@@ -260,7 +215,7 @@ export class Game {
     let smallestX = Infinity;
     let largestX = 0;
 
-    for (let [coordinates, cell] of this.cells.entries()) {
+    for (const [coordinates, cell] of this.cells.entries()) {
       const [x, y] = coordinates.split(',').map((c) => Math.floor(Number(c) / this.cellSize));
       if (cell.active) {
         pattern[y][x] = 'x';
@@ -292,12 +247,12 @@ export class Game {
     this.largePaint = !this.largePaint;
   }
 
-  reset(mode: seed) {
+  reset(mode: Seed) {
     this.clear();
     this.seed(mode);
   }
 
-  private seed(mode: seed) {
+  private seed(mode: Seed) {
     if (mode === 'random') this.pickRandomCells(this.startingCellNum);
     else this.drawPattern(ALL_SEEDS[mode]);
   }
@@ -319,7 +274,7 @@ export class Game {
       Math.floor((this.canvas.height / this.cellSize / 2) * this.cellSize) -
       Math.floor(pattern.length / 2) * this.cellSize;
     let maxRowLength = pattern[0].length;
-    for (let row of pattern) {
+    for (const row of pattern) {
       if (row.length > maxRowLength) maxRowLength = row.length;
     }
     const initX =
@@ -339,18 +294,15 @@ export class Game {
 }
 
 class Cell {
-  private coordinates;
-  private ctx;
-  neighbours;
   private isActive = false;
   private colors;
   liveOnNextTick = false;
   id: string;
 
   constructor(
-    coordinates: number[],
-    ctx: CanvasRenderingContext2D,
-    neighbours: Array<string | null>,
+    private coordinates: number[],
+    private ctx: CanvasRenderingContext2D,
+    public neighbours: Array<string | null>,
     activeColor: string,
     inactiveColor: string
   ) {

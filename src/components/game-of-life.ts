@@ -1,6 +1,8 @@
-import { CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { ALL_SEEDS, Game, seed } from '../lib/game';
+import { html, LitElement } from 'lit';
+import type { PropertyValues, CSSResultGroup } from 'lit';
+import { ALL_SEEDS, Game } from '../lib/game';
+import type { Seed } from '../lib/game';
 import { styles } from './game-of-life-styles';
 const validSeeds = Object.keys(ALL_SEEDS);
 
@@ -32,16 +34,16 @@ export class GameOfLife extends LitElement {
 
   @property({
     converter: {
-      fromAttribute(value: string): seed {
-        if (validSeeds.includes(value as seed)) {
-          return value as seed;
+      fromAttribute(value: string): Seed {
+        if (validSeeds.includes(value as Seed)) {
+          return value as Seed;
         }
         console.warn(`Invalid seed value: "${value}". Using "random" instead.`);
         return 'random';
       },
     },
   })
-  seed: seed = 'random';
+  seed: Seed = 'random';
 
   @query('canvas')
   canvas!: HTMLCanvasElement;
@@ -145,7 +147,12 @@ export class GameOfLife extends LitElement {
               </svg>`}
         </button>
 
-        <button class="control-btn" @click=${() => (this.controlsOpen = !this.controlsOpen)}>
+        <button
+          class="control-btn"
+          @click=${() => {
+            this.controlsOpen = !this.controlsOpen;
+          }}
+        >
           <svg width="25" height="25" viewBox="0 -8 72 72">
             <g>
               <title>Settings</title>
@@ -160,7 +167,7 @@ export class GameOfLife extends LitElement {
           <div>
             <select
               @change=${(e: InputEvent) => {
-                this.seed = (e.target as HTMLInputElement)!.value as seed;
+                this.seed = (e.target as HTMLInputElement)!.value as Seed;
                 if (this.game) this.game.reset(this.seed);
                 this.running = false;
               }}
